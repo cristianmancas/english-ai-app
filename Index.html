@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>AI English Tutor Ultra-Smart</title>
+<style>
+body{font-family:Arial;background:#f4f6fb;text-align:center;padding:30px;}
+button{padding:12px 20px;margin:10px;font-size:16px;border:none;border-radius:8px;background:#4a6cff;color:white;}
+#chat{width:90%;max-width:500px;margin:auto;background:white;padding:20px;border-radius:12px;box-shadow:0 0 10px rgba(0,0,0,0.1);}
+#result{margin-top:20px;font-weight:bold;}
+</style>
+</head>
+<body>
+<h1>AI English Tutor Ultra-Smart</h1>
+<div id="chat">
+<p id="lesson"></p>
+<p id="conversation"></p>
+</div>
+<button onclick="newLesson()">📚 New Lesson</button>
+<button onclick="speakSentence()">🔊 Listen</button>
+<button onclick="startRecognition()">🎤 Speak</button>
+<p id="result"></p>
+
+<script>
+let lessonSentences = [
+"I would like a coffee.",
+"Where is the train station?",
+"I am learning English every day.",
+"Can you help me with this problem?",
+"I want to improve my pronunciation.",
+"Yesterday I went to the airport.",
+"I enjoy reading books in English.",
+"Could you tell me the time, please?",
+"I am preparing for a job interview.",
+"Traveling abroad is exciting."
+];
+
+let sentence = "";
+
+function newLesson(){
+  sentence = lessonSentences[Math.floor(Math.random()*lessonSentences.length)];
+  document.getElementById("lesson").innerHTML =
+  "Today's sentence:<br><b>"+sentence+"</b>";
+  document.getElementById("result").innerHTML = "";
+}
+
+// Text-to-Speech
+function speakSentence(){
+  let speech = new SpeechSynthesisUtterance(sentence);
+  speech.lang="en-US";
+  speechSynthesis.speak(speech);
+}
+
+// Speech-to-Text & basic AI correction
+function startRecognition(){
+  if(!('webkitSpeechRecognition' in window)){
+    alert("Your browser does not support speech recognition.");
+    return;
+  }
+  let recognition = new webkitSpeechRecognition();
+  recognition.lang="en-US";
+  recognition.onresult = function(event){
+    let userSpeech = event.results[0][0].transcript;
+    document.getElementById("result").innerHTML =
+      "You said: " + userSpeech + "<br>" +
+      "Correction: " + getCorrection(userSpeech, sentence);
+  };
+  recognition.start();
+}
+
+// Basic AI-like correction (demo)
+function getCorrection(userText, correctText){
+  let wordsUser = userText.toLowerCase().split(" ");
+  let wordsCorrect = correctText.toLowerCase().split(" ");
+  let correction = [];
+  for(let i=0;i<wordsCorrect.length;i++){
+    if(wordsUser[i]!==wordsCorrect[i]){
+      correction.push(wordsCorrect[i]);
+    } else {
+      correction.push(wordsUser[i]);
+    }
+  }
+  return correction.join(" ");
+}
+
+// Initialize first lesson
+newLesson();
+</script>
+</body>
+</html>
